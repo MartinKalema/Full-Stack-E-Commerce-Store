@@ -3,6 +3,7 @@ import asyncHandler from "../middlewares/asyncHandler.js";
 import bcrypt from "bcryptjs";
 import generateToken from "../utils/createToken.js";
 
+// Handle User Registration.
 const createUser = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
 
@@ -12,7 +13,7 @@ const createUser = asyncHandler(async (req, res) => {
   }
 
   // if user exists, reject.
-  const userExists = await User.findOne({ email: email });
+  const userExists = await User.findOne({ email });
   if (userExists) {
     res.status(400).send("User already exists");
   }
@@ -38,4 +39,39 @@ const createUser = asyncHandler(async (req, res) => {
   }
 });
 
-export { createUser };
+// Handling logins.
+const loginUser = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  const existingUser = await User.findOne({ email });
+
+  if (!existingUser) {
+    return res.status(401).json({ message: "Invalid email or password." });
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, existingUser.password);
+
+  if (!isPasswordValid) {
+    return res.status(401).json({ message: "Invalid email or password." });
+  }
+
+  generateToken(res, existingUser._id);
+  res.status(201).json({
+    _id: existingUser._id,
+    username: existingUser.username,
+    email: existingUser.email,
+    isAdmin: existingUser.isAdmin,
+  });
+
+  return;
+});
+
+// Logout the current user.
+const logoutCurrentUser = asyncHandler(async (req, res) => {
+  res.cookie("jwt", "", {
+    httpOnly: true,
+    expires: new Date(0),
+  });
+  res.status(200).json({ message: "Logged Out Successfully." });
+});
+
+export { createUser, loginUser, logoutCurrentUser };
