@@ -1,6 +1,8 @@
 import jwt from "jsonwebtoken";
 
-// generating JSOn Wen Token used for authentication and authorization.
+// generate a token which represents the User's authentication status.
+//  For each request to the server, the client includes the cookie in the request headers. This allows the server to identify the user and their authentication status.
+// userId is a custom claim.
 const generateToken = (res, userId) => {
   const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
     expiresIn: "7d",
