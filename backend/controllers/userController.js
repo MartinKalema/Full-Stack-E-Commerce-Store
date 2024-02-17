@@ -102,7 +102,11 @@ const updateCurrentUserProfile = asyncHandler(async (req, res) => {
     user.username = req.body.username || user.username;
     user.email = req.body.email || user.email;
     if (req.body.password) {
-      user.password = req.body.password;
+      const encryptedPassword = await bcrypt.hash(
+        req.body.password,
+        await bcrypt.genSalt(10)
+      );
+      user.password = encryptedPassword;
     }
     // Update
     const updatedUser = await user.save();
