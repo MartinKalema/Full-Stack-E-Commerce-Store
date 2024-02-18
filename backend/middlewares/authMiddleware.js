@@ -28,11 +28,9 @@ const authenticate = asyncHandler(async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // Corrected typo in comment and optimized query
-    req.user = await User.findById(decoded.userId).select("-password"); // Exclude the password field from the result of the query.
+    req.user = await User.findById(decoded.userId).select("-password");
     next();
   } catch (error) {
-    // Unified error handling
     console.error("Authentication token error:", error.message);
     return res
       .status(401)
@@ -51,12 +49,11 @@ const authenticate = asyncHandler(async (req, res, next) => {
 
 const authorizeAdmin = (req, res, next) => {
   if (req.user?.isAdmin) {
-    // Optional chaining for safety. Only access isAdmin if req.user exists.
     next();
   } else {
     res
       .status(403)
-      .json({ message: "Access denied. Requires administrator privileges." }); // 403 Forbidden for clarity
+      .json({ message: "Access denied. Requires administrator privileges." }); // 403 Forbidden
   }
 };
 

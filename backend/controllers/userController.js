@@ -3,43 +3,42 @@ import asyncHandler from "../middlewares/asyncHandler.js";
 import bcrypt from "bcryptjs";
 import generateToken from "../utils/createToken.js";
 
-// Handle User Registration.
+/**
+ * Methods for handling user registration, login, and profile management.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+
+// User registration
 const createUser = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
 
-  // ensure all fields are filled.
   if (!username || !email || !password) {
+    res.status(400);
     throw new Error("Please fill all the input fields.");
   }
 
-  // if user exists, reject.
   const userExists = await User.findOne({ email });
   if (userExists) {
-    res.status(400).send("User already exists");
+    return res.status(400).json({ message: "User already exists" });
   }
 
-  // password encryption
   const saltValue = await bcrypt.genSalt(10);
   const encryptedPassword = await bcrypt.hash(password, saltValue);
 
-  // create user
   const newUser = new User({ username, email, password: encryptedPassword });
-  try {
-    await newUser.save();
-    generateToken(res, newUser._id);
-    res.status(201).json({
-      _id: newUser._id,
-      username: newUser.username,
-      email: newUser.email,
-      isAdmin: newUser.isAdmin,
-    });
-  } catch (error) {
-    res.status(400);
-    throw new Error("Something went wrong.");
-  }
+  await newUser.save();
+  generateToken(res, newUser._id);
+
+  res.status(201).json({
+    _id: newUser._id,
+    username: newUser.username,
+    email: newUser.email,
+    isAdmin: newUser.isAdmin,
+  });
 });
 
-// Handling logins.
+// Handle User Login
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const existingUser = await User.findOne({ email });
@@ -49,68 +48,100 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   const isPasswordValid = await bcrypt.compare(password, existingUser.password);
-
   if (!isPasswordValid) {
     return res.status(401).json({ message: "Invalid Password." });
   }
 
   generateToken(res, existingUser._id);
-  res.status(201).json({
+  res.status(200).json({
     _id: existingUser._id,
     username: existingUser.username,
     email: existingUser.email,
     isAdmin: existingUser.isAdmin,
   });
-  return;
 });
 
-// Logout the current user.
-// The server invalidates the user's session token by deleting the cookie from the client-side(setting it to expire).
+// Logout the current user by clearing the JWT cookie.
 const logoutCurrentUser = asyncHandler(async (req, res) => {
-  res.cookie("jwt", "", {
-    httpOnly: true,
-    expires: new Date(0),
-  });
+  res.cookie("jwt", "", { httpOnly: true, expires: new Date(0) });
   res.status(200).json({ message: "Logged Out Successfully." });
 });
 
-// Fetch all users
+// Fetch all users. Requires admin privileges.
 const getAllUsers = asyncHandler(async (req, res) => {
   const users = await User.find({});
   res.json(users);
 });
 
-// Get current Users Data
+// Get current user's profile data.
 const getCurrentUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+  res.json({ _id: user._id, username: user.username, email: user.email });
+});
+
+// Update current user's profile data.
+const updateCurrentUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found");
+  }
+
+  user.username = req.body.username || user.username;
+  user.email = req.body.email || user.email;
+  if (req.body.password) {
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(req.body.password, salt);
+  }
+
+  const updatedUser = await user.save();
+  res.status(200).json({
+    _id: updatedUser._id,
+    username: updatedUser.username,
+    email: updatedUser.email,
+    isAdmin: updatedUser.isAdmin,
+  });
+});
+
+// Delete a user by id.
+const deleteUserById = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id).select("-password");
   if (user) {
-    res.json({
-      _id: user._id,
-      username: user.username,
-      email: user.email,
-    });
+    if (user.isAdmin) {
+      res.status(400);
+      throw new Error("Admins cannot be fetched using this endpoint.");
+    }
+    await User.deleteOne({ _id: user.id });
+    res.status(200).json({ message: "User deleted successfully." });
   } else {
     res.status(404);
     throw new Error("User not found");
   }
 });
 
-// Update current users data.
-const updateCurrentUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id);
+// Get user by Id
+const getUserById = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id).select("-password");
+  if (user) {
+    res.json(user);
+  } else {
+    res.status(404);
+    throw new Error("User not found");
+  }
+});
+
+const updateUserById = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
   if (user) {
     user.username = req.body.username || user.username;
     user.email = req.body.email || user.email;
-    if (req.body.password) {
-      const encryptedPassword = await bcrypt.hash(
-        req.body.password,
-        await bcrypt.genSalt(10)
-      );
-      user.password = encryptedPassword;
-    }
-    // Update
-    const updatedUser = await user.save();
+    user.isAdmin = Boolean(req.body.isAdmin);
 
+    const updatedUser = await user.save();
     res.json({
       _id: updatedUser._id,
       username: updatedUser.username,
@@ -119,9 +150,7 @@ const updateCurrentUserProfile = asyncHandler(async (req, res) => {
     });
   } else {
     res.status(404);
-    throw new Error(
-      "Its wierd that the current users has no data in the Database."
-    );
+    throw new Error("User not found");
   }
 });
 
@@ -132,4 +161,7 @@ export {
   getAllUsers,
   getCurrentUserProfile,
   updateCurrentUserProfile,
+  deleteUserById,
+  getUserById,
+  updateUserById,
 };

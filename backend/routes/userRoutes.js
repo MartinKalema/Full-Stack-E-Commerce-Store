@@ -6,6 +6,9 @@ import {
   getAllUsers,
   getCurrentUserProfile,
   updateCurrentUserProfile,
+  deleteUserById,
+  getUserById,
+  updateUserById,
 } from "../controllers/userController.js";
 
 import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
@@ -16,36 +19,28 @@ import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
  */
 const router = express.Router();
 
-/**
- * Route serving user creation and listing all users.
- * POST: Creates a new user.
- * GET: Retrieves all users, requires authentication and admin authorization.
- */
+// Route serving user creation and listing all users.
 router
   .route("/")
   .post(createUser)
   .get(authenticate, authorizeAdmin, getAllUsers);
 
-/**
- * Route serving user authentication.
- * POST: Authenticates a user and returns a token.
- */
+//  Route serving user authentication.
 router.post("/auth", loginUser);
 
-/**
- * Route for logging out the current user.
- * POST: Ends the user's session or invalidates their token.
- */
+// Route for logging out the current user.
 router.post("/logout", logoutCurrentUser);
 
-/**
- * Routes serving user profile operations.
- * GET: Retrieves the current user's profile, requires authentication.
- * PUT: Updates the current user's profile, requires authentication.
- */
+// Routes serving user profile operations.
 router
   .route("/profile")
   .get(authenticate, getCurrentUserProfile)
   .put(authenticate, updateCurrentUserProfile);
+
+router
+  .route("/:id")
+  .delete(authenticate, authorizeAdmin, deleteUserById)
+  .get(authenticate, authorizeAdmin, getUserById)
+  .put(authenticate, authorizeAdmin, updateUserById);
 
 export default router;
