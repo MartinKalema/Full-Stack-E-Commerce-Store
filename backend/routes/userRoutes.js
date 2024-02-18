@@ -10,21 +10,42 @@ import {
 
 import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
 
-// instance of express.Router()
+/**
+ * Router instance for user-related routes.
+ * @type {express.Router}
+ */
 const router = express.Router();
 
-// USER ROUTES
+/**
+ * Route serving user creation and listing all users.
+ * POST: Creates a new user.
+ * GET: Retrieves all users, requires authentication and admin authorization.
+ */
 router
   .route("/")
-  .post(createUser) // When a POST request is sent to the root URL '/', it triggers the createUser function.
-  .get(authenticate, authorizeAdmin, getAllUsers); // When a GET request is sent to the root URL '/', it triggers the middleware functions sequentially. getAllUsers only executes if the user is successfully authenticated and authorized as an admin.
-router.post("/auth", loginUser); // We don't need middleware to run the loginUser function.
-router.post("/logout", logoutCurrentUser); // We don't need middleware to run the logoutCurrentUser function.
+  .post(createUser)
+  .get(authenticate, authorizeAdmin, getAllUsers);
+
+/**
+ * Route serving user authentication.
+ * POST: Authenticates a user and returns a token.
+ */
+router.post("/auth", loginUser);
+
+/**
+ * Route for logging out the current user.
+ * POST: Ends the user's session or invalidates their token.
+ */
+router.post("/logout", logoutCurrentUser);
+
+/**
+ * Routes serving user profile operations.
+ * GET: Retrieves the current user's profile, requires authentication.
+ * PUT: Updates the current user's profile, requires authentication.
+ */
 router
   .route("/profile")
   .get(authenticate, getCurrentUserProfile)
-  .put(authenticate, updateCurrentUserProfile); // authenticate the user before getting the user profile.
-
-// ADMINISTRATOR ROUTES
+  .put(authenticate, updateCurrentUserProfile);
 
 export default router;

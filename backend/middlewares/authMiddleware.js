@@ -48,6 +48,7 @@ const authenticate = asyncHandler(async (req, res, next) => {
  * @function authorizeAdmin
  * @returns {Function} Middleware function that takes Express's req, res, and next parameters.
  */
+
 const authorizeAdmin = (req, res, next) => {
   if (req.user?.isAdmin) {
     // Optional chaining for safety. Only access isAdmin if req.user exists.
