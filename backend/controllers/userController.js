@@ -134,6 +134,7 @@ const getUserById = asyncHandler(async (req, res) => {
   }
 });
 
+// Update user by id. Requires admin privileges.
 const updateUserById = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id);
   if (user) {

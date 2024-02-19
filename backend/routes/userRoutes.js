@@ -26,10 +26,10 @@ router
   .get(authenticate, authorizeAdmin, getAllUsers);
 
 //  Route serving user authentication.
-router.post("/auth", loginUser);
+router.route("/auth").post(loginUser);
 
 // Route for logging out the current user.
-router.post("/logout", logoutCurrentUser);
+router.route("/logout").post(logoutCurrentUser);
 
 // Routes serving user profile operations.
 router
