@@ -5,10 +5,10 @@ import {
   AiOutlineLogin,
   AiOutlineUserAdd,
   AiOutlineShoppingCart,
-} from "react-icons/ai";
-import { FaHeart } from "react-icons/fa";
-import { Link } from "react-router-dom"; // Used to create links for client-side routing
-import { useNavigate } from "react-router-dom"; // Navigating between routes in a react application.
+} from "react-icons/ai"; // icons
+import { FaHeart } from "react-icons/fa"; // icons
+import { Link } from "react-router-dom"; // Client-side Routing without page refresh
+import { useNavigate } from "react-router-dom"; // Similar to Link
 import "./Navigation.css";
 import { useState } from "react";
 

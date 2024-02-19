@@ -1,8 +1,8 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom"; // Nested routing
 import Navigation from "./pages/authentication/Navigation";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify"; // Displaying toast notifications.
+import "react-toastify/dist/ReactToastify.css"; // Styling for toast notifications.
 
 /**
  * Functional component representing the main app.
