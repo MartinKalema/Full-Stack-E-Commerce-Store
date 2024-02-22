@@ -1,4 +1,3 @@
-import path from "path";
 import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
@@ -24,7 +23,7 @@ app.use(cookieParser());
 // Routes for user-related operations.
 app.use("/api/users", userRoutes);
 
-const port = process.env.PORT || 5000;
-
 // Starts the server on the specified port.
-app.listen(port, () => console.log(`Server running on port: ${port}`));
+app.listen(port, () =>
+  console.log(`Server running on port: ${process.env.PORT || 5000}`)
+);

@@ -27,7 +27,7 @@ module.exports = {
   },
   'plugins': [
     'react',
-    'tailwindcss'
+    'tailwindcss',
   ],
   'settings': {
     'react': {

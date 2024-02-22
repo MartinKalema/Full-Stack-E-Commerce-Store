@@ -1,11 +1,13 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { apiSlice } from "./api/apiSlice";
-import { setupListeners } from "@reduxjs/toolkit/query/react";
-import { usersApi } from "./api/usersApiSlice";
+import { configureStore } from "@reduxjs/toolkit"; // Create redux store
+import { apiSlice } from "./api/apiSlice"; // Create API slice
+import { setupListeners } from "@reduxjs/toolkit/query/react"; // Setup listeners for API slice
+import authReducer from "./features/auth/authSlice"; // Create auth slice
 
 const store = configureStore({
+  // reducers used to manage the state
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
+    auth: authReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(apiSlice.middleware),
