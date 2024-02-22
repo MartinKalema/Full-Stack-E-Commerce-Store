@@ -6,9 +6,11 @@ const initialState = {
     : null,
 };
 
+// Slice is a part of the store
 const authSlice = createSlice({
   name: "auth",
   initialState,
+  // reducers are the methods used to update the state.
   reducers: {
     setCredentials: (state, action) => {
       state.userInfo = action.payload;

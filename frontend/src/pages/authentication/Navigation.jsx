@@ -11,8 +11,13 @@ import { Link } from "react-router-dom"; // Client-side Routing without page ref
 import { useNavigate } from "react-router-dom"; // Similar to Link
 import "./Navigation.css";
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../redux/features/auth/authSlice";
+import { useLoginMutation } from "../../redux/api/usersApiSlice";
 
-const navigation = () => {
+const Navigation = () => {
+  const { userInfo } = useSelector((state) => state.auth);
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
 
@@ -28,6 +33,21 @@ const navigation = () => {
     setShowSidebar(false);
   };
 
+  const dispatch = useDispatch();
+
+  const navigate = useNavigate();
+
+  const { logoutApiCall } = useLoginMutation();
+
+  const logoutHandler = async () => {
+    try {
+      await logoutApiCall().unwrap();
+      dispatch(logout());
+      navigate("/login");
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <div
       style={{ zIndex: 999 }}
@@ -70,6 +90,19 @@ const navigation = () => {
         </Link>
       </div>
 
+      <div className="realtive">
+        <button
+          onClick={toggleDropdown}
+          className="flex items-center text-gray-8000 focus:outline-none"
+        >
+          {userInfo ? (
+            <span className="text-white">{userInfo.username}</span>
+          ) : (
+            <></>
+          )}
+        </button>
+      </div>
+
       <ul>
         <li>
           <Link
@@ -96,4 +129,4 @@ const navigation = () => {
   );
 };
 
-export default navigation;
+export default Navigation;
