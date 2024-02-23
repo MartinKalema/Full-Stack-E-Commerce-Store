@@ -28,6 +28,10 @@ const authSlice = createSlice({
   },
 });
 
+// With redux, you can directly mutate the state.
+// e.g state.value += 1 instead of using a method to set the state
+// This is because redux uses immer under the hood to make the state immutable.
+
 export const { setCredentials, logout } = authSlice.actions;
 
 export default authSlice.reducer;

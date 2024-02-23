@@ -99,6 +99,24 @@ const Navigation = () => {
             <span className="text-white">{userInfo.username}</span>
           ) : (
             <></>
+          )}{" "}
+          {userInfo && (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className={`h-4 w-4 ${
+                dropdownOpen ? "transform rotate-180" : ""
+              }`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="white"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d={dropdownOpen ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
+              />
+            </svg>
           )}
         </button>
       </div>
