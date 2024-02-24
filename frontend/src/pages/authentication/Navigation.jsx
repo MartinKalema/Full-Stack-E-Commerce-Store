@@ -1,4 +1,3 @@
-import React from "react";
 import {
   AiOutlineHome,
   AiOutlineShopping,
@@ -37,10 +36,11 @@ const Navigation = () => {
 
   const navigate = useNavigate();
 
-  const { logoutApiCall } = useLogoutMutation();
+  const [logoutApiCall] = useLogoutMutation();
 
   const logoutHandler = async () => {
     try {
+      console.log("logout executed");
       await logoutApiCall().unwrap();
       dispatch(logout());
       navigate("/login");
@@ -48,6 +48,7 @@ const Navigation = () => {
       console.error(error);
     }
   };
+
   return (
     <div
       style={{ zIndex: 999 }}
@@ -171,52 +172,50 @@ const Navigation = () => {
               </>
             )}
             <li>
-              <Link
-                to="/admin/profile"
-                className="block px-4 py-2 hover:bg-gray-100"
-              >
+              <Link to="/profile" className="block px-4 py-2 hover:bg-gray-100">
                 Profile
               </Link>
             </li>
             <li>
-              <Link
-                to="/admin/logout"
+              <button
                 onClick={logoutHandler}
-                className="block px-4 py-2 hover:bg-gray-100"
+                className="block w-full px-4 py-2 text-left hover:bg-gray-100"
               >
                 Logout
+              </button>
+            </li>
+          </ul>
+        )}
+
+        {/* !userinfo evaluates to true if userInfo is null, undefined, false, 0 or empty string */}
+
+        {!userInfo && (
+          <ul>
+            <li>
+              <Link
+                to="/login"
+                className="flex items-center transition-transform transform hover:translate-x-2"
+              >
+                <AiOutlineLogin className="mr-2 mt-[3rem]" size={26} />
+                <span className="hidden nav-item-name mt-[3rem]">
+                  LOGIN
+                </span>{" "}
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/register"
+                className="flex items-center transition-transform transform hover:translate-x-2"
+              >
+                <AiOutlineUserAdd className="mr-2 mt-[3rem]" size={26} />
+                <span className="hidden nav-item-name mt-[3rem]">
+                  REGISTER
+                </span>{" "}
               </Link>
             </li>
           </ul>
         )}
       </div>
-
-      {/* !userinfo evaluates to true if userInfo is null, undefined, false, 0 or empty string */}
-
-      {!userInfo && (
-        <ul>
-          <li>
-            <Link
-              to="/login"
-              className="flex items-center transition-transform transform hover:translate-x-2"
-            >
-              <AiOutlineLogin className="mr-2 mt-[3rem]" size={26} />
-              <span className="hidden nav-item-name mt-[3rem]">LOGIN</span>{" "}
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/register"
-              className="flex items-center transition-transform transform hover:translate-x-2"
-            >
-              <AiOutlineUserAdd className="mr-2 mt-[3rem]" size={26} />
-              <span className="hidden nav-item-name mt-[3rem]">
-                REGISTER
-              </span>{" "}
-            </Link>
-          </li>
-        </ul>
-      )}
     </div>
   );
 };

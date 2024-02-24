@@ -77,9 +77,11 @@ const Login = () => {
             <button
               disabled={isLoading}
               type="submit"
-              className="bg-pink-500 text-white px-4 py-2 rounded cursor-pointer my-[1rem] "
+              className={`bg-pink-500 text-white px-4 py-2 rounded cursor-pointer my-[1rem] ${
+                isLoading ? "hidden" : ""
+              }`}
             >
-              {isLoading ? "SIGNING IN..." : "SIGN IN"}
+              SIGN IN
             </button>
             {isLoading && <Loader />}
           </form>
