@@ -17,7 +17,7 @@ const Register = () => {
 
   const [register, { isLoading }] = useRegisterMutation();
 
-  const userInfo = useSelector((state) => state.auth);
+  const { userInfo } = useSelector((state) => state.auth);
 
   const { search } = useLocation();
   const searchParameters = new URLSearchParams(search);
@@ -30,7 +30,13 @@ const Register = () => {
     }
   }, [navigate, redirect, userInfo]);
 
-  return <div className="text-white">Register</div>;
+  return (
+    <section className="pl-[10rem] flex flex-wrap">
+      <div className="mr-[4rem] mt-[5rem]">
+        <h1 className="text-2xl font-semibold mb-4">Register</h1>
+      </div>
+    </section>
+  );
 };
 
 export default Register;
