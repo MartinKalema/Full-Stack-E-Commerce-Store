@@ -106,7 +106,9 @@ const Register = () => {
             className={`bg-pink-500 text-white px-4 py-2 rounded cursor-pointer my-[1rem] ${
               isLoading ? "hidden" : ""
             }`}
-          ></button>
+          >
+            Register
+          </button>
           {isLoading && <Loader />}
         </form>
 
