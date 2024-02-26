@@ -57,10 +57,10 @@ const Register = () => {
               htmlFor="email"
               className="block text-sm font-medium text-white"
             >
-              Email
+              Email Address
             </label>
             <input
-              type="text"
+              type="email"
               id="email"
               className="mt-1 p-2 border rounded w-full"
               placeholder="Enter email"
@@ -76,11 +76,11 @@ const Register = () => {
               Password
             </label>
             <input
-              type="text"
+              type="password"
               id="password"
               className="mt-1 p-2 border rounded w-full"
               placeholder="Enter password"
-              value={username}
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
@@ -92,15 +92,35 @@ const Register = () => {
               Confirm Password
             </label>
             <input
-              type="text"
+              type="password"
               id="confirmPassword"
               className="mt-1 p-2 border rounded w-full"
               placeholder="Confirm Password"
-              value={username}
+              value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </div>
+          <button
+            disabled={isLoading}
+            type="submit"
+            className={`bg-pink-500 text-white px-4 py-2 rounded cursor-pointer my-[1rem] ${
+              isLoading ? "hidden" : ""
+            }`}
+          ></button>
+          {isLoading && <Loader />}
         </form>
+
+        <div className="mt-4">
+          <p className="text-white">
+            Already have an account?{" "}
+            <Link
+              to={redirect ? `/login?redirect=${redirect}` : "/login"}
+              className="text-pink-500 hover:underline"
+            >
+              Login
+            </Link>
+          </p>
+        </div>
       </div>
     </section>
   );
